@@ -1,0 +1,296 @@
+[
+  {
+    "scenario_id": "scenario_001",
+    "run_date": "2017-02-06",
+    "bug_type": "row_filter_bug",
+    "difficulty": "dominant",
+    "params": {
+      "excluded_seller_state": "SP"
+    },
+    "staging_row_count": 42,
+    "mechanism": "The staging join carries an accidental filter that silently drops every order item from one seller_state, e.g. a leftover debug WHERE clause."
+  },
+  {
+    "scenario_id": "scenario_002",
+    "run_date": "2017-02-07",
+    "bug_type": "row_filter_bug",
+    "difficulty": "dominant",
+    "params": {
+      "excluded_seller_state": "SP"
+    },
+    "staging_row_count": 57,
+    "mechanism": "The staging join carries an accidental filter that silently drops every order item from one seller_state, e.g. a leftover debug WHERE clause."
+  },
+  {
+    "scenario_id": "scenario_003",
+    "run_date": "2017-02-08",
+    "bug_type": "row_filter_bug",
+    "difficulty": "minor",
+    "params": {
+      "excluded_seller_state": "RJ"
+    },
+    "staging_row_count": 95,
+    "mechanism": "The staging join carries an accidental filter that silently drops every order item from one seller_state, e.g. a leftover debug WHERE clause."
+  },
+  {
+    "scenario_id": "scenario_004",
+    "run_date": "2017-03-01",
+    "bug_type": "join_fanout_bug",
+    "difficulty": "dominant",
+    "params": {
+      "duplicated_category_name": "moveis_decoracao"
+    },
+    "staging_row_count": 131,
+    "mechanism": "The category-translation lookup has a duplicate row for one category, so the join fans out and every item in that category is double-counted."
+  },
+  {
+    "scenario_id": "scenario_005",
+    "run_date": "2017-03-04",
+    "bug_type": "join_fanout_bug",
+    "difficulty": "minor",
+    "params": {
+      "duplicated_category_name": "automotivo"
+    },
+    "staging_row_count": 89,
+    "mechanism": "The category-translation lookup has a duplicate row for one category, so the join fans out and every item in that category is double-counted."
+  },
+  {
+    "scenario_id": "scenario_006",
+    "run_date": "2017-03-06",
+    "bug_type": "join_fanout_bug",
+    "difficulty": "minor",
+    "params": {
+      "duplicated_category_name": "utilidades_domesticas"
+    },
+    "staging_row_count": 117,
+    "mechanism": "The category-translation lookup has a duplicate row for one category, so the join fans out and every item in that category is double-counted."
+  },
+  {
+    "scenario_id": "scenario_007",
+    "run_date": "2017-03-07",
+    "bug_type": "schema_drift_bug",
+    "difficulty": "dominant",
+    "params": {
+      "affected_category": "cama_mesa_banho"
+    },
+    "staging_row_count": 98,
+    "mechanism": "For one category, the upstream category name arrives with an unexpected format (e.g. trailing whitespace) that breaks the translation join key, so category_english lands NULL for exactly that category's items."
+  },
+  {
+    "scenario_id": "scenario_008",
+    "run_date": "2017-03-09",
+    "bug_type": "schema_drift_bug",
+    "difficulty": "minor",
+    "params": {
+      "affected_category": "moveis_escritorio"
+    },
+    "staging_row_count": 114,
+    "mechanism": "For one category, the upstream category name arrives with an unexpected format (e.g. trailing whitespace) that breaks the translation join key, so category_english lands NULL for exactly that category's items."
+  },
+  {
+    "scenario_id": "scenario_009",
+    "run_date": "2017-03-10",
+    "bug_type": "schema_drift_bug",
+    "difficulty": "minor",
+    "params": {
+      "affected_category": "perfumaria"
+    },
+    "staging_row_count": 99,
+    "mechanism": "For one category, the upstream category name arrives with an unexpected format (e.g. trailing whitespace) that breaks the translation join key, so category_english lands NULL for exactly that category's items."
+  },
+  {
+    "scenario_id": "scenario_010",
+    "run_date": "2017-03-13",
+    "bug_type": "stale_reference_bug",
+    "difficulty": "dominant",
+    "params": {
+      "missing_categories": [
+        "moveis_decoracao"
+      ]
+    },
+    "staging_row_count": 118,
+    "mechanism": "The category-translation reference used by this run is a stale snapshot missing a couple of categories, so those categories' items get no English name."
+  },
+  {
+    "scenario_id": "scenario_011",
+    "run_date": "2017-03-14",
+    "bug_type": "stale_reference_bug",
+    "difficulty": "minor",
+    "params": {
+      "missing_categories": [
+        "brinquedos"
+      ]
+    },
+    "staging_row_count": 114,
+    "mechanism": "The category-translation reference used by this run is a stale snapshot missing a couple of categories, so those categories' items get no English name."
+  },
+  {
+    "scenario_id": "scenario_012",
+    "run_date": "2017-03-16",
+    "bug_type": "stale_reference_bug",
+    "difficulty": "minor",
+    "params": {
+      "missing_categories": [
+        "consoles_games"
+      ]
+    },
+    "staging_row_count": 127,
+    "mechanism": "The category-translation reference used by this run is a stale snapshot missing a couple of categories, so those categories' items get no English name."
+  },
+  {
+    "scenario_id": "scenario_013",
+    "run_date": "2017-03-20",
+    "bug_type": "null_coalesce_bug",
+    "difficulty": "dominant",
+    "params": {
+      "null_price_seller_id": "620c87c171fb2a6dd6e8bb4dec959fc6"
+    },
+    "staging_row_count": 127,
+    "mechanism": "One seller's item prices arrive NULL (an upstream data-quality gap), and the facts aggregation silently COALESCEs price to 0 instead of excluding or flagging those rows, understating revenue without erroring."
+  },
+  {
+    "scenario_id": "scenario_014",
+    "run_date": "2017-03-21",
+    "bug_type": "null_coalesce_bug",
+    "difficulty": "minor",
+    "params": {
+      "null_price_seller_id": "76d5af76d0271110f9af36c92573f765"
+    },
+    "staging_row_count": 105,
+    "mechanism": "One seller's item prices arrive NULL (an upstream data-quality gap), and the facts aggregation silently COALESCEs price to 0 instead of excluding or flagging those rows, understating revenue without erroring."
+  },
+  {
+    "scenario_id": "scenario_015",
+    "run_date": "2017-03-22",
+    "bug_type": "null_coalesce_bug",
+    "difficulty": "minor",
+    "params": {
+      "null_price_seller_id": "da8622b14eb17ae2831f4ac5b9dab84a"
+    },
+    "staging_row_count": 122,
+    "mechanism": "One seller's item prices arrive NULL (an upstream data-quality gap), and the facts aggregation silently COALESCEs price to 0 instead of excluding or flagging those rows, understating revenue without erroring."
+  },
+  {
+    "scenario_id": "scenario_016",
+    "run_date": "2017-03-23",
+    "bug_type": "currency_unit_bug",
+    "difficulty": "dominant",
+    "params": {
+      "affected_seller_state": "SP",
+      "unit_factor": 100
+    },
+    "staging_row_count": 134,
+    "mechanism": "Freight values for one seller_state are systematically scaled by the wrong unit factor (e.g. cents vs. dollars), skewing avg_freight for that state."
+  },
+  {
+    "scenario_id": "scenario_017",
+    "run_date": "2017-03-27",
+    "bug_type": "currency_unit_bug",
+    "difficulty": "minor",
+    "params": {
+      "affected_seller_state": "RS",
+      "unit_factor": 100
+    },
+    "staging_row_count": 120,
+    "mechanism": "Freight values for one seller_state are systematically scaled by the wrong unit factor (e.g. cents vs. dollars), skewing avg_freight for that state."
+  },
+  {
+    "scenario_id": "scenario_018",
+    "run_date": "2017-03-28",
+    "bug_type": "currency_unit_bug",
+    "difficulty": "minor",
+    "params": {
+      "affected_seller_state": "RJ",
+      "unit_factor": 100
+    },
+    "staging_row_count": 116,
+    "mechanism": "Freight values for one seller_state are systematically scaled by the wrong unit factor (e.g. cents vs. dollars), skewing avg_freight for that state."
+  },
+  {
+    "scenario_id": "scenario_019",
+    "run_date": "2017-04-04",
+    "bug_type": "timezone_bucketing_bug",
+    "difficulty": "n/a",
+    "params": {
+      "shift_hours": 3
+    },
+    "staging_row_count": 111,
+    "mechanism": "The staging date filter buckets orders using a shifted local-time boundary instead of the correct one, so a slice of orders near midnight land in the wrong day's run."
+  },
+  {
+    "scenario_id": "scenario_020",
+    "run_date": "2017-04-05",
+    "bug_type": "timezone_bucketing_bug",
+    "difficulty": "n/a",
+    "params": {
+      "shift_hours": 3
+    },
+    "staging_row_count": 95,
+    "mechanism": "The staging date filter buckets orders using a shifted local-time boundary instead of the correct one, so a slice of orders near midnight land in the wrong day's run."
+  },
+  {
+    "scenario_id": "scenario_021",
+    "run_date": "2017-04-06",
+    "bug_type": "timezone_bucketing_bug",
+    "difficulty": "n/a",
+    "params": {
+      "shift_hours": 3
+    },
+    "staging_row_count": 114,
+    "mechanism": "The staging date filter buckets orders using a shifted local-time boundary instead of the correct one, so a slice of orders near midnight land in the wrong day's run."
+  },
+  {
+    "scenario_id": "scenario_022",
+    "run_date": "2017-04-07",
+    "bug_type": "clean",
+    "difficulty": "n/a",
+    "params": {},
+    "staging_row_count": 96,
+    "mechanism": "No defect. Staging/facts are built straightforwardly from source."
+  },
+  {
+    "scenario_id": "scenario_023",
+    "run_date": "2017-04-10",
+    "bug_type": "clean",
+    "difficulty": "n/a",
+    "params": {},
+    "staging_row_count": 95,
+    "mechanism": "No defect. Staging/facts are built straightforwardly from source."
+  },
+  {
+    "scenario_id": "scenario_024",
+    "run_date": "2017-04-20",
+    "bug_type": "clean",
+    "difficulty": "n/a",
+    "params": {},
+    "staging_row_count": 115,
+    "mechanism": "No defect. Staging/facts are built straightforwardly from source."
+  },
+  {
+    "scenario_id": "scenario_025",
+    "run_date": "2017-04-22",
+    "bug_type": "clean",
+    "difficulty": "n/a",
+    "params": {},
+    "staging_row_count": 94,
+    "mechanism": "No defect. Staging/facts are built straightforwardly from source."
+  },
+  {
+    "scenario_id": "scenario_026",
+    "run_date": "2017-04-23",
+    "bug_type": "clean",
+    "difficulty": "n/a",
+    "params": {},
+    "staging_row_count": 91,
+    "mechanism": "No defect. Staging/facts are built straightforwardly from source."
+  },
+  {
+    "scenario_id": "scenario_027",
+    "run_date": "2017-04-24",
+    "bug_type": "clean",
+    "difficulty": "n/a",
+    "params": {},
+    "staging_row_count": 135,
+    "mechanism": "No defect. Staging/facts are built straightforwardly from source."
+  }
+]
