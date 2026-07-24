@@ -35,7 +35,7 @@ def test_diagnose_aggregates_usage_and_returns_parsed_output(conn):
     result = agent.diagnose("r1")
 
     assert result.iterations == 3
-    assert result.diagnosis is diagnosis
+    assert result.diagnosis == diagnosis
     assert result.usage["input_tokens"] == 1000 + 1200 + 1300
     assert result.usage["output_tokens"] == 50 + 30 + 200
     assert result.usage["cache_read_input_tokens"] == 0 + 1000 + 1200

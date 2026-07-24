@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pipeline Doctor Agent</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>Pipeline Doctor Agent</h1>
+        <p class="subtitle">
+            An autonomous agent that investigates a data-pipeline run and diagnoses whether
+            it's healthy or has a defect &mdash; without ever being told the answer up front.
+        </p>
+    </header>
+
+    <main>
+        <section class="controls">
+            <label for="run-select">Pipeline run to investigate</label>
+            <select id="run-select"></select>
+            <button id="diagnose-btn">Diagnose</button>
+            <span id="status" class="status"></span>
+        </section>
+
+        <section class="panels">
+            <div class="panel" id="trace-panel">
+                <h2>Live investigation</h2>
+                <div id="trace-list" class="trace-list"></div>
+            </div>
+
+            <div class="panel" id="diagnosis-panel">
+                <h2>Diagnosis</h2>
+                <div id="diagnosis-content" class="diagnosis-content">
+                    <p class="placeholder">Run a diagnosis to see results here.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

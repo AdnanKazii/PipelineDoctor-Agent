@@ -1,8 +1,9 @@
 import os
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 
-from anthropic import Anthropic
 import duckdb
+from anthropic import Anthropic
 
 from .prompts import SYSTEM_PROMPT
 from .schemas import DiagnosisResult
@@ -33,7 +34,13 @@ class AgentRun:
         self.client = client or Anthropic()
         self.model = model
 
-    def diagnose(self, run_id: str, max_iterations: int = DEFAULT_MAX_ITERATIONS) -> AgentRunResult:
+    def diagnose_stream(self, run_id: str, max_iterations: int = DEFAULT_MAX_ITERATIONS) -> Iterator[dict]:
+        """Yields {"type": "tool_call", ...} events as the investigation
+        progresses, then a final {"type": "done", ...} event. A tool's result
+        lands in `trace` while the *next* message is being produced (the
+        runner executes tool calls between yields), so diffing `trace` against
+        what we've already emitted, each time we receive a message, correctly
+        streams every call as soon as it's available."""
         trace: list[dict] = []
         tools = build_tools(self.conn, trace)
 
@@ -58,6 +65,7 @@ class AgentRun:
 
         final_message = None
         iterations = 0
+        emitted = 0
         usage = {
             "input_tokens": 0, "output_tokens": 0,
             "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0,
@@ -71,8 +79,35 @@ class AgentRun:
             usage["cache_read_input_tokens"] += u.cache_read_input_tokens or 0
             usage["cache_creation_input_tokens"] += u.cache_creation_input_tokens or 0
 
+            for entry in trace[emitted:]:
+                yield {"type": "tool_call", **entry}
+            emitted = len(trace)
+
+        for entry in trace[emitted:]:
+            yield {"type": "tool_call", **entry}
+
         diagnosis = final_message.parsed_output if final_message is not None else None
+        yield {
+            "type": "done",
+            "run_id": run_id,
+            "diagnosis": diagnosis.model_dump() if diagnosis else None,
+            "iterations": iterations,
+            "usage": usage,
+        }
+
+    def diagnose(self, run_id: str, max_iterations: int = DEFAULT_MAX_ITERATIONS) -> AgentRunResult:
+        trace: list[dict] = []
+        done: dict | None = None
+        for event in self.diagnose_stream(run_id, max_iterations=max_iterations):
+            if event["type"] == "tool_call":
+                trace.append({k: v for k, v in event.items() if k != "type"})
+            else:
+                done = event
 
         return AgentRunResult(
-            run_id=run_id, diagnosis=diagnosis, trace=trace, iterations=iterations, usage=usage,
+            run_id=run_id,
+            diagnosis=DiagnosisResult.model_validate(done["diagnosis"]) if done and done["diagnosis"] else None,
+            trace=trace,
+            iterations=done["iterations"] if done else 0,
+            usage=done["usage"] if done else {},
         )
